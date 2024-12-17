@@ -9,11 +9,13 @@ import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveFieldCentric;
+import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveSubsystem;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp (name = "TeleOpSingle")
 public class TeleOp extends OpMode {
     private final Robot robot = Robot.getInstance();
     private final MecanumDrive m_mecanumDrive = new MecanumDrive();
+    MecanumDriveSubsystem mecanumDriveSubsystem ;
     private final ClawSubsystem m_clawSubsystem = new ClawSubsystem();
     private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
 
@@ -25,11 +27,16 @@ public class TeleOp extends OpMode {
         m_mecanumDrive.DriveInit(hardwareMap);
         m_clawSubsystem.ClawInit(hardwareMap);
         m_intakeSubsystem.IntakeInit(hardwareMap);
+        mecanumDriveSubsystem = new MecanumDriveSubsystem(hardwareMap);
     }
 
     @Override
     public void loop() {
-        m_mecanumDrive.Drive(gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x);
+       // m_mecanumDrive.Drive(gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x);
+        double forwardBack = -gamepad1.left_stick_y;
+        double strafe = gamepad1.left_stick_x;
+        double turn = gamepad1.right_stick_x;
+        m_mecanumDrive.Drive(forwardBack, strafe, turn);
         if (gamepad1.right_bumper) {
             m_clawSubsystem.OpenClaw(1);
         }
