@@ -31,6 +31,7 @@ public class MecanumDrive extends SubsystemBase {
     }
 
     public void Drive(double drive, double strafe, double twist) {
+        double max;
 
         double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(twist), 1);
         double frontLeftPower = (drive + strafe + twist) / denominator;
@@ -38,10 +39,21 @@ public class MecanumDrive extends SubsystemBase {
         double frontRightPower = (drive - strafe - twist) / denominator;
         double backRightPower = (drive + strafe - twist) / denominator;
 
-        leftFront.setPower(frontLeftPower * 1.25);
-        rightFront.setPower(frontRightPower * 0.75);
-        leftBack.setPower(backLeftPower * 1.25);
-        rightBack.setPower(backRightPower * 1);
+        max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
+        max = Math.max(max, Math.abs(backLeftPower));
+        max = Math.max(max, Math.abs(backRightPower));
+
+        if (max > 1.0) {
+            frontLeftPower /= max;
+            frontRightPower /= max;
+            backLeftPower /= max;
+            backRightPower /= max;
+        }
+
+        leftFront.setPower(frontLeftPower);
+        rightFront.setPower(frontRightPower);
+        leftBack.setPower(backLeftPower);
+        rightBack.setPower(backRightPower);
     }
 
 
