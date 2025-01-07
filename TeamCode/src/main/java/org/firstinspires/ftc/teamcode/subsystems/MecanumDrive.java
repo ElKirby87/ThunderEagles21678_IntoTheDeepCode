@@ -19,6 +19,7 @@ public class MecanumDrive extends SubsystemBase {
     private DcMotorEx leftBack = null;
     private DcMotorEx rightBack = null;
 
+
     public void DriveInit(HardwareMap hardwareMap) {
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
@@ -28,10 +29,14 @@ public class MecanumDrive extends SubsystemBase {
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void Drive(double drive, double strafe, double twist) {
-        double max;
 
         double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(twist), 1);
         double frontLeftPower = (drive + strafe + twist) / denominator;
@@ -39,22 +44,17 @@ public class MecanumDrive extends SubsystemBase {
         double frontRightPower = (drive - strafe - twist) / denominator;
         double backRightPower = (drive + strafe - twist) / denominator;
 
-        max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
-        max = Math.max(max, Math.abs(backLeftPower));
-        max = Math.max(max, Math.abs(backRightPower));
-
-        if (max > 1.0) {
-            frontLeftPower /= max;
-            frontRightPower /= max;
-            backLeftPower /= max;
-            backRightPower /= max;
-        }
-
         leftFront.setPower(frontLeftPower);
         rightFront.setPower(frontRightPower);
         leftBack.setPower(backLeftPower);
         rightBack.setPower(backRightPower);
     }
 
+    public void DriveStop() {
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+    }
 
 }

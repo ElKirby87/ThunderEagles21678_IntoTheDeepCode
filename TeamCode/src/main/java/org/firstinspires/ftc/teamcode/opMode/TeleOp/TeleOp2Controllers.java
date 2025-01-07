@@ -7,7 +7,6 @@ import org.firstinspires.ftc.teamcode.hardware.Constants;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveFieldCentric;
 
 @TeleOp (name = "TeleOp2Controllers")
@@ -23,7 +22,7 @@ public class TeleOp2Controllers extends OpMode {
         super.resetRuntime();
         robot.init(hardwareMap);
         m_mecanumDrive.DriveInit(hardwareMap);
-        m_clawSubsystem.ClawInit(hardwareMap);
+        m_clawSubsystem.ClawInit(hardwareMap,telemetry);
         m_intakeSubsystem.IntakeInit(hardwareMap);
     }
 
@@ -54,35 +53,29 @@ public class TeleOp2Controllers extends OpMode {
         if (!gamepad2.a && !gamepad2.b) {
             m_intakeSubsystem.ActivateArm(0, 0);
         }
-        if (gamepad2.left_bumper) {
-            m_intakeSubsystem.OpenHand(0.25);
-        }
-        if (!gamepad2.left_bumper) {
-            m_intakeSubsystem.OpenHand(0.10);
-        }
         if (gamepad2.dpad_left) {
-            m_intakeSubsystem.ActivateTray(1);
+            m_intakeSubsystem.ActivateIntake(0.5);
         }
         if (gamepad2.dpad_right) {
-            m_intakeSubsystem.ActivateTray(-1);
+            m_intakeSubsystem.ActivateIntake(-0.5);
         }
         if (!gamepad2.dpad_left && !gamepad2.dpad_right) {
             m_intakeSubsystem.ActivateTray(0);
         }
         if (gamepad1.dpad_up) {
-            m_clawSubsystem.ActivateElevator(-1, 1);
+            m_clawSubsystem.ActivateElevator(true);
         }
         if (gamepad1.dpad_down) {
-            m_clawSubsystem.ActivateElevator(1, -1);
+            m_clawSubsystem.ActivateElevator(false);
         }
         if (!gamepad1.dpad_up && !gamepad1.dpad_down) {
-            m_clawSubsystem.ActivateElevator(0, 0);
+            m_clawSubsystem.StopElevator();
         }
         if (gamepad2.left_trigger == 0) {
-            m_intakeSubsystem.ActivateHandDoll(-gamepad1.right_trigger);
+            m_intakeSubsystem.ActivateTray(-gamepad1.right_trigger);
         }
         if (gamepad2.right_trigger == 0) {
-            m_intakeSubsystem.ActivateHandDoll(gamepad1.left_trigger);
+            m_intakeSubsystem.ActivateTray(gamepad1.left_trigger);
         }
     }
 }

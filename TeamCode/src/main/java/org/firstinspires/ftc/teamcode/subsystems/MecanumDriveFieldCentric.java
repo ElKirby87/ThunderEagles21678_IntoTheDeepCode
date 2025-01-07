@@ -36,7 +36,6 @@ public class MecanumDriveFieldCentric extends SubsystemBase {
     }
 
     public void Drive(double drive, double strafe, double twist, boolean options) {
-        double max;
         if (options) {
             imu.resetYaw();
         }
@@ -48,22 +47,13 @@ public class MecanumDriveFieldCentric extends SubsystemBase {
 
         strafeX = strafeX * 1.1;
 
-        //double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(twist), 1);
-        double frontLeftPower = (driveY + strafeX + twist);
-        double backLeftPower = (driveY - strafeX + twist);
-        double frontRightPower = (driveY - strafeX - twist);
-        double backRightPower = (driveY + strafeX - twist);
+        double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(twist), 1);
+        double frontLeftPower = (driveY + strafeX + twist) / denominator;
+        double backLeftPower = (driveY - strafeX + twist) / denominator;
+        double frontRightPower = (driveY - strafeX - twist) / denominator;
+        double backRightPower = (driveY + strafeX - twist) / denominator;
 
-        max = Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower));
-        max = Math.max(max, Math.abs(backLeftPower));
-        max = Math.max(max, Math.abs(backRightPower));
 
-        if (max > 1.0) {
-            frontLeftPower /= max;
-            frontRightPower /= max;
-            backLeftPower /= max;
-            backRightPower /= max;
-        }
 
         leftFront.setPower(frontLeftPower);
         rightFront.setPower(frontRightPower);

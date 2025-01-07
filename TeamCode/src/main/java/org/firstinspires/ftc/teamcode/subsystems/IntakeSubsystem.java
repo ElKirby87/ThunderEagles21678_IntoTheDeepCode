@@ -9,16 +9,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class IntakeSubsystem extends SubsystemBase {
     CRServo intakeArmLeftServo = null;
     CRServo intakeArmRightServo = null;
-    Servo intakeHand = null;
-    CRServo intakeHandDoll = null;
-    DcMotor intakeTray;
+    DcMotor intakeTray = null;
+    DcMotor intake = null;
 
     public void IntakeInit(HardwareMap hardwareMap) {
         intakeArmLeftServo = hardwareMap.get(CRServo.class, "intakeArmLeft");
         intakeArmRightServo = hardwareMap.get(CRServo.class, "intakeArmRight");
-        intakeHand = hardwareMap.get(Servo.class, "intakeHand");
-        intakeHandDoll = hardwareMap.get(CRServo.class, "intakeHand_Doll");
         intakeTray = hardwareMap.get(DcMotor.class, "deposit");
+        intake = hardwareMap.get(DcMotor.class, "intake");
     }
 
     public void ActivateArm(double armLeftPower, double armRightPower) {
@@ -26,13 +24,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeArmRightServo.setPower(armRightPower);
     }
 
-    public void OpenHand(double position) {
-        intakeHand.setPosition(position);
-    }
-
-    public void ActivateHandDoll(double power) {
-        intakeHandDoll.setPower(power);
-    }
+    public void ActivateIntake(double power) { intake.setPower(power); }
 
     public void ActivateTray (double power) {
         intakeTray.setPower(power);
