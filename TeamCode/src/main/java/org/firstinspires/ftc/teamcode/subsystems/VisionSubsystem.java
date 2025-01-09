@@ -23,13 +23,14 @@ import java.util.List;
 public class VisionSubsystem extends SubsystemBase {
     private Limelight3A limelight3A;
     private MecanumDrive m_mecanumDrive = new MecanumDrive();
-    final double DESIRED_DISTANCE = 20; //in
+    final double DESIRED_DISTANCE = 20;
+    final int TOLERANCE = 2;//in
     final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.01 ;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
     final double TURN_GAIN   =  0.015  ;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 1;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 1;   //  Clip the strafing speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 1;
+    final double MAX_AUTO_STRAFE= 1;
     final double MAX_AUTO_TURN  = 1;
 
 
@@ -59,15 +60,18 @@ public class VisionSubsystem extends SubsystemBase {
                     telemetry.addData("tz", targetZ);
                     telemetry.update();
 
-                    double drive;
-                    if (targetZ >= DESIRED_DISTANCE) {
+                    double drive = 0;
+                    if (targetZ > DESIRED_DISTANCE) {
                         drive = -Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                    } else {
+                    } if (targetZ < DESIRED_DISTANCE) {
                         drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);;
+                    } if ((targetZ - DESIRED_DISTANCE) <= TOLERANCE &&
+                            (targetZ - DESIRED_DISTANCE) >= 0) {
+                        m_mecanumDrive.DriveStop();
                     }
                     double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
                     double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                    m_mecanumDrive.Drive(drive, strafe, -turn);
+                    m_mecanumDrive.Drive(drive, strafe, turn);
                 }
             } else {
                 m_mecanumDrive.DriveStop();

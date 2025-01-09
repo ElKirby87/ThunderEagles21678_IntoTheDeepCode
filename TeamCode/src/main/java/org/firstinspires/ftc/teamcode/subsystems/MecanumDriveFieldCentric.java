@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.arcrobotics.ftclib.controller.PController;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -16,6 +19,8 @@ public class MecanumDriveFieldCentric extends SubsystemBase {
     private DcMotorEx leftBack = null;
     private DcMotorEx rightBack = null;
     private IMU imu;
+    private final int finalTicks = 560;
+    private final double wheelDistance = 7.5 * Math.PI;
 
     public void DriveInit(HardwareMap hardwareMap) {
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -27,6 +32,11 @@ public class MecanumDriveFieldCentric extends SubsystemBase {
         rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
@@ -36,6 +46,7 @@ public class MecanumDriveFieldCentric extends SubsystemBase {
     }
 
     public void Drive(double drive, double strafe, double twist, boolean options) {
+
         if (options) {
             imu.resetYaw();
         }
@@ -52,8 +63,6 @@ public class MecanumDriveFieldCentric extends SubsystemBase {
         double backLeftPower = (driveY - strafeX + twist) / denominator;
         double frontRightPower = (driveY - strafeX - twist) / denominator;
         double backRightPower = (driveY + strafeX - twist) / denominator;
-
-
 
         leftFront.setPower(frontLeftPower);
         rightFront.setPower(frontRightPower);
